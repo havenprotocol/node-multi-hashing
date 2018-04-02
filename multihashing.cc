@@ -50,7 +50,7 @@ NAN_METHOD(quark) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     quark_hash(input, output, input_len);
@@ -93,17 +93,17 @@ NAN_METHOD(scrypt) {
 
    if(!Buffer::HasInstance(target))
        return THROW_ERROR_EXCEPTION("Argument should be a buffer object.");
-    
+
    Local<Number> numn = info[1]->ToNumber();
    unsigned int nValue = numn->Value();
    Local<Number> numr = info[2]->ToNumber();
    unsigned int rValue = numr->Value();
-   
+
    char * input = Buffer::Data(target);
    char output[32];
 
    uint32_t input_len = Buffer::Length(target);
-   
+
    scrypt_N_R_1_256(input, output, nValue, rValue, input_len);
 
     v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
@@ -238,7 +238,7 @@ NAN_METHOD(skein) {
     char output[32];
 
     uint32_t input_len = Buffer::Length(target);
-    
+
     skein_hash(input, output, input_len);
 
     v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
@@ -260,7 +260,7 @@ NAN_METHOD(groestl) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     groestl_hash(input, output, input_len);
@@ -284,7 +284,7 @@ NAN_METHOD(groestlmyriad) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     groestlmyriad_hash(input, output, input_len);
@@ -308,7 +308,7 @@ NAN_METHOD(blake) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     blake_hash(input, output, input_len);
@@ -332,7 +332,7 @@ NAN_METHOD(fugue) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     fugue_hash(input, output, input_len);
@@ -356,7 +356,7 @@ NAN_METHOD(qubit) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     qubit_hash(input, output, input_len);
@@ -380,7 +380,7 @@ NAN_METHOD(hefty1) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     hefty1_hash(input, output, input_len);
@@ -404,7 +404,7 @@ NAN_METHOD(shavite3) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     shavite3_hash(input, output, input_len);
@@ -421,7 +421,7 @@ NAN_METHOD(cryptonight) {
 
     if (info.Length() < 1)
         return THROW_ERROR_EXCEPTION("You must provide one argument.");
-    
+
     if (info.Length() >= 2) {
         if(!info[1]->IsBoolean())
             return THROW_ERROR_EXCEPTION("Argument 2 should be a boolean");
@@ -435,7 +435,7 @@ NAN_METHOD(cryptonight) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     if(fast)
@@ -461,10 +461,10 @@ NAN_METHOD(cryptonight_heavy) {
 
     char* input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
-    if(input_len == 0 || input[0] >= 0x03)
+    if(input_len == 0 || input[0] >= 0x02)
     {
         cn_heavy::cn_pow_hash_v2 ctx;
         ctx.hash(input, input_len, output);
