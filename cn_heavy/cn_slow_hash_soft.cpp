@@ -126,13 +126,13 @@ struct aesdata
 		v64x0 = mem.as_uqword(0);
 		v64x1 = mem.as_uqword(1);
 	}
-	
+
 	inline void xor_load(const cn_sptr mem)
 	{
 		v64x0 ^= mem.as_uqword(0);
 		v64x1 ^= mem.as_uqword(1);
 	}
-	
+
 	inline void write(cn_sptr mem)
 	{
 		mem.as_uqword(0) = v64x0;
@@ -160,7 +160,7 @@ struct aesdata
 		v64x1 ^= t;
 		return *this;
 	}
-	
+
 	inline void get_quad(uint32_t& x0, uint32_t& x1, uint32_t& x2, uint32_t& x3)
 	{
 		x0 = v64x0;
@@ -168,7 +168,7 @@ struct aesdata
 		x2 = v64x1;
 		x3 = v64x1 >> 32;
 	}
-	
+
 	inline void set_quad(uint32_t x0, uint32_t x1, uint32_t x2, uint32_t x3)
 	{
 		v64x0 = uint64_t(x0) | uint64_t(x1) << 32;
@@ -178,7 +178,7 @@ struct aesdata
 
 inline uint32_t sub_word(uint32_t key)
 {
-	return (saes_sbox[key >> 24 ] << 24)   | (saes_sbox[(key >> 16) & 0xff] << 16 ) | 
+	return (saes_sbox[key >> 24 ] << 24)   | (saes_sbox[(key >> 16) & 0xff] << 16 ) |
 		(saes_sbox[(key >> 8)  & 0xff] << 8  ) | saes_sbox[key & 0xff];
 }
 
@@ -281,7 +281,7 @@ void cn_slow_hash<MEMORY,ITER,VERSION>::implode_scratchpad_soft()
 {
 	aesdata x0, x1, x2, x3, x4, x5, x6, x7;
 	aesdata k0, k1, k2, k3, k4, k5, k6, k7, k8, k9;
-	
+
 	aes_genkey(spad.as_uqword() + 4, k0, k1, k2, k3, k4, k5, k6, k7, k8, k9);
 
 	x0.load(spad.as_uqword() + 8);
@@ -377,7 +377,7 @@ void cn_slow_hash<MEMORY,ITER,VERSION>::explode_scratchpad_soft()
 {
 	aesdata x0, x1, x2, x3, x4, x5, x6, x7;
 	aesdata k0, k1, k2, k3, k4, k5, k6, k7, k8, k9;
-	
+
 	aes_genkey(spad.as_uqword(), k0, k1, k2, k3, k4, k5, k6, k7, k8, k9);
 
 	x0.load(spad.as_uqword() + 8);
@@ -464,7 +464,7 @@ inline uint64_t _umul128(uint64_t a, uint64_t b, uint64_t* hi)
 	*hi = r >> 64;
 	return (uint64_t)r;
 }
-#endif 
+#endif
 #endif
 
 template<size_t MEMORY, size_t ITER, size_t VERSION>
@@ -473,7 +473,7 @@ void cn_slow_hash<MEMORY,ITER,VERSION>::software_hash(const void* in, size_t len
 	keccak((const uint8_t *)in, len, spad.as_byte(), 200);
 
 	explode_scratchpad_soft();
-	
+
 	uint64_t* h0 = spad.as_uqword();
 
 	aesdata ax;
@@ -486,7 +486,7 @@ void cn_slow_hash<MEMORY,ITER,VERSION>::software_hash(const void* in, size_t len
 
 	aesdata cx;
 	cn_sptr idx = scratchpad_ptr(ax.v64x0);
-	
+
 	for(size_t i = 0; i < ITER/2; i++)
 	{
 		uint64_t hi, lo;
@@ -511,7 +511,7 @@ void cn_slow_hash<MEMORY,ITER,VERSION>::software_hash(const void* in, size_t len
 		{
 			int64_t n  = idx.as_qword(0);
 			int32_t d  = idx.as_dword(2);
-			int64_t q = n / (d | 5);
+			int64_t q = VERSION == 2 ? n / (d | 7) : n / (d | 5);
 			idx.as_qword(0) = n ^ q;
 			idx = scratchpad_ptr(d ^ q);
 		}
@@ -536,7 +536,7 @@ void cn_slow_hash<MEMORY,ITER,VERSION>::software_hash(const void* in, size_t len
 		{
 			int64_t n  = idx.as_qword(0); // read bytes 0 - 7
 			int32_t d  = idx.as_dword(2); // read bytes 8 - 11
-			int64_t q = n / (d | 5);
+			int64_t q = VERSION == 2 ? n / (d | 7) : n / (d | 5);
 			idx.as_qword(0) = n ^ q;
 			idx = scratchpad_ptr(d ^ q);
 		}
@@ -565,5 +565,6 @@ void cn_slow_hash<MEMORY,ITER,VERSION>::software_hash(const void* in, size_t len
 
 template class cn_slow_hash<2*1024*1024, 0x80000, 0>;
 template class cn_slow_hash<4*1024*1024, 0x40000, 1>;
+template class cn_slow_hash<4*1024*1024, 0x40000, 2>;
 
 } //cn_heavy namespace

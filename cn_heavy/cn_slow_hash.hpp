@@ -115,7 +115,7 @@ public:
 	inline uint8_t& as_byte(size_t i) { return *(reinterpret_cast<uint8_t*>(base_ptr)+i); }
 	inline uint8_t* as_byte() { return reinterpret_cast<uint8_t*>(base_ptr); }
 	inline uint64_t& as_uqword(size_t i) { return *(reinterpret_cast<uint64_t*>(base_ptr)+i); }
-	inline const uint64_t& as_uqword(size_t i) const { return *(reinterpret_cast<uint64_t*>(base_ptr)+i); } 
+	inline const uint64_t& as_uqword(size_t i) const { return *(reinterpret_cast<uint64_t*>(base_ptr)+i); }
 	inline uint64_t* as_uqword() { return reinterpret_cast<uint64_t*>(base_ptr); }
 	inline const uint64_t* as_uqword() const { return reinterpret_cast<uint64_t*>(base_ptr); }
 	inline int64_t& as_qword(size_t i) { return *(reinterpret_cast<int64_t*>(base_ptr)+i); }
@@ -144,12 +144,12 @@ public:
 #endif
 	}
 
-	cn_slow_hash (cn_slow_hash&& other) noexcept : lpad(other.lpad.as_byte()), spad(other.spad.as_byte()) 
+	cn_slow_hash (cn_slow_hash&& other) noexcept : lpad(other.lpad.as_byte()), spad(other.spad.as_byte())
 	{
 		other.lpad.set(nullptr);
 		other.spad.set(nullptr);
 	}
-	
+
 	cn_slow_hash& operator= (cn_slow_hash&& other) noexcept
     {
 		if(this == &other)
@@ -179,7 +179,7 @@ public:
 	}
 
 	void software_hash(const void* in, size_t len, void* out);
-	
+
 #if !defined(HAS_INTEL_HW) && !defined(HAS_ARM_HW)
 	inline void hardware_hash(const void* in, size_t len, void* out) { assert(false); }
 #else
@@ -202,7 +202,7 @@ private:
 			return true;
 		}
 	}
-	
+
 	inline void free_mem()
 	{
 #if !defined(HAS_WIN_INTRIN_API)
@@ -239,9 +239,11 @@ private:
 
 using cn_pow_hash_v1 = cn_slow_hash<2*1024*1024, 0x80000, 0>;
 using cn_pow_hash_v2 = cn_slow_hash<4*1024*1024, 0x40000, 1>;
+using cn_pow_hash_v3 = cn_slow_hash<4*1024*1024, 0x40000, 2>;
 
 extern template class cn_slow_hash<2*1024*1024, 0x80000, 0>;
 extern template class cn_slow_hash<4*1024*1024, 0x40000, 1>;
+extern template class cn_slow_hash<4*1024*1024, 0x40000, 2>;
 
 } //cn_heavy namespace
 
