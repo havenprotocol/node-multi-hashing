@@ -40,9 +40,9 @@ extern "C"
 #include "../crypto/c_blake256.h"
 }
 
-namespace cn_heavy {
-
 #ifdef HAS_INTEL_HW
+
+namespace cn_heavy {
 
 #if !defined(_LP64) && !defined(_WIN64)
 #define BUILD32
